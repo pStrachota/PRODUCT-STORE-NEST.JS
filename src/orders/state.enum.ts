@@ -1,0 +1,1 @@
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';export enum STATUS {  NOT_CONFIRMED = 'not confirmed',  CONFIRMED = 'confirmed',  CANCELLED = 'cancelled',  COMPLETED = 'completed',}
