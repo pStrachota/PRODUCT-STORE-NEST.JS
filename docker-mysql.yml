@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  mysql-shop-db:
+    image: mysql:8.0.30
+    restart: always
+    volumes:
+      - ./db-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
