@@ -9,12 +9,15 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { Order } from './order.entity';
 import { Product } from '../products/product.entity';
 import { STATUS } from './state.enum';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private ordersRepository: Repository<Order>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
   ) {}
@@ -29,9 +32,16 @@ export class OrdersService {
     });
   }
 
-  async updateStatus(orderId: number, status: STATUS): Promise<Order> {
+  async updateStatus(
+    userId: string,
+    orderId: number,
+    status: STATUS,
+  ): Promise<Order> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
     const order = await this.ordersRepository.findOneBy({
       id: orderId,
+      user,
     });
 
     const products: Product[] = order.products;
@@ -56,17 +66,39 @@ export class OrdersService {
   }
 
   async createOrder(id, createOrderDto: CreateOrderDto) {
+    const user = await this.userRepository.findOneBy({ id: id });
+
     const status = STATUS.NOT_CONFIRMED;
     const Products = await this.productRepository.findByIds(
       createOrderDto.ProductsIds.map((id) => id),
     );
 
     const fullOrder = {
+      user,
       status,
       Products,
     };
 
     await this.ordersRepository.save(fullOrder);
     return { message: 'Order created' };
+  }
+
+  async findSelfOrdersByStatus(id, status: STATUS) {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    return this.ordersRepository.find({
+      where: {
+        user,
+        status: status,
+      },
+    });
+  }
+
+  async findSelfOrders(id) {
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    return await this.ordersRepository.find({
+      where: { user },
+    });
   }
 }

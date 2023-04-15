@@ -1,7 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty } from '@nestjs/class-validator';
 import { Product } from '../products/product.entity';
 import { STATUS } from './state.enum';
+import { User } from "../users/user.entity";
 
 @Entity()
 export class Order {
@@ -22,4 +23,8 @@ export class Order {
   })
   @IsNotEmpty()
   products: Product[];
+
+  @ManyToOne(() => User, { cascade: true, eager: true })
+  @IsNotEmpty()
+  user: User;
 }

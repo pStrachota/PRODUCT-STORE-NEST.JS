@@ -8,12 +8,16 @@ import {
   Param,
   Post,
   Put,
-  Req,
-} from '@nestjs/common';
+  Req, UseGuards
+} from "@nestjs/common";
 import { CategoriesService } from './categories.service';
 import { QueryFailedError } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Roles } from "../auth/roles/roles.decorator";
+import { Role } from "../users/role.enum";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { RolesGuard } from "../auth/roles/roles.guard";
 
 @Controller('categories')
 export class CategoriesController {
@@ -25,11 +29,15 @@ export class CategoriesController {
   }
 
   @Post()
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async createCategory(@Body() category: CreateCategoryDto) {
     return await this.categoriesService.createCategory(category);
   }
 
   @Delete('/:categoryName')
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async deleteCategory(@Param('categoryName') categoryName: string) {
     try {
       const category = await this.categoriesService.deleteCategory(
@@ -59,6 +67,8 @@ export class CategoriesController {
   }
 
   @Put('/:categoryName')
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async updateCategory(
     @Req() req,
     @Param('categoryName') categoryName: string,

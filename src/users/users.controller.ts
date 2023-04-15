@@ -4,27 +4,36 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  Patch,
+  Put,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles/roles.decorator';
+import { Role } from './role.enum';
+import { RolesGuard } from '../auth/roles/roles.guard';
 
 @Controller('/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('/profile')
+  @UseGuards(JwtAuthGuard)
   async getUser(@Request() req) {
     return await this.usersService.findOne(req.user.userId);
   }
 
   @Get()
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getAll() {
     return await this.usersService.find();
   }
 
-  @Patch()
+  @Put()
+  @UseGuards(JwtAuthGuard)
   async updateUser(@Request() req, @Body() user: UpdateUserDto) {
     try {
       return await this.usersService.updateUser(user, req.user.userId);
