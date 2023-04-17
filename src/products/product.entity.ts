@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IsNotEmpty } from '@nestjs/class-validator';
 import { IsNotEmptyObject } from 'class-validator';
-import { Category } from 'src/categories/category.entity';
+import { Category } from '../categories/category.entity';
 
 @Entity()
 export class Product {

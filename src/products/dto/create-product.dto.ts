@@ -10,9 +10,6 @@ export class CreateProductDto {
   @IsPositive()
   price: number;
 
-  @IsPositive()
-  weight: number;
-
   @IsNotEmpty()
   categoryName: string;
 }

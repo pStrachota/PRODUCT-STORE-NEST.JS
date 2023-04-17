@@ -1,8 +1,14 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { IsNotEmpty } from '@nestjs/class-validator';
 import { Product } from '../products/product.entity';
 import { STATUS } from './state.enum';
-import { User } from "../users/user.entity";
+import { User } from '../users/user.entity';
 
 @Entity()
 export class Order {
@@ -10,7 +16,6 @@ export class Order {
   id: number;
 
   @Column({
-    unique: true,
     type: 'enum',
     enum: STATUS,
     default: STATUS.NOT_CONFIRMED,

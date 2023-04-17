@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -28,11 +28,12 @@ export class ProductsService {
       categoryName: createProductDto.categoryName,
     });
 
+    if (!category) throw new HttpException('Category not found', 404);
+
     const fullProduct = {
       name: createProductDto.name,
       description: createProductDto.description,
       price: createProductDto.price,
-      weight: createProductDto.weight,
       category,
     };
 

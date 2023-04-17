@@ -41,25 +41,25 @@ export class OrdersController {
     return await this.ordersService.createOrder(req.user.id, createOrderDto);
   }
 
-  @Put(':id')
-  @Roles(Role.User, Role.Admin)
+  @Put(':id/:status')
+  @Roles(Role.User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async changeStatus(
     @Req() req,
-    @Param('orderId') orderId: number,
+    @Param('id') orderId: number,
     @Param('status') status: STATUS,
   ) {
     return this.ordersService.updateStatus(req.user.id, orderId, status);
   }
 
-  @Get('/status/:id')
+  @Get('/:status/')
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async findAllByStatus(@Param() status: STATUS) {
     return this.ordersService.getOrdersByStatus(status);
   }
 
-  @Get('self/status/:id')
+  @Get('self/:status')
   @Roles(Role.User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async findSelfOrdersByStatus(@Req() req, @Param() status: STATUS) {

@@ -73,6 +73,14 @@ export class OrdersService {
       createOrderDto.ProductsIds.map((id) => id),
     );
 
+    Products.forEach((product) => {
+      if (!product.isAvailable) {
+        throw new BadRequestException('Product is not available');
+      }
+      product.isAvailable = false;
+    });
+    await this.productRepository.save(Products);
+
     const fullOrder = {
       user,
       status,
