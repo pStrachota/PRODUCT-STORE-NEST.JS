@@ -3,6 +3,8 @@ import {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { config } from 'dotenv';
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -22,3 +24,18 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     };
   },
 };
+
+config();
+
+const configService = new ConfigService();
+
+export default new DataSource({
+  type: 'mysql',
+  host: configService.get('MYSQL_HOST'),
+  port: configService.get('MYSQL_PORT'),
+  username: configService.get('MYSQL_USER'),
+  password: configService.get('MYSQL_PASS'),
+  database: configService.get('MYSQL_DATABASE'),
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+});
