@@ -10,3 +10,10 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASS}
+
+  redis-shop-cache:
+    image: redis
+    container_name: redis-shop-cache
+    restart: always
+    ports:
+      - "6379:6379"

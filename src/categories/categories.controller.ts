@@ -5,27 +5,45 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Inject,
   Param,
   Post,
   Put,
-  Req, UseGuards
-} from "@nestjs/common";
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { QueryFailedError } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Roles } from "../auth/roles/roles.decorator";
-import { Role } from "../users/role.enum";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { RolesGuard } from "../auth/roles/roles.guard";
+import { Roles } from '../auth/roles/roles.decorator';
+import { Role } from '../users/role.enum';
+import { Cache } from 'cache-manager';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles/roles.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Category } from './category.entity';
 
+@ApiBearerAuth()
+@ApiTags('categories')
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(
+    private readonly categoriesService: CategoriesService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   @Get()
   async findAll() {
-    return this.categoriesService.findAll();
+    const key = `categories`;
+    const cachedCategories = await this.cacheManager.get<Category>(key);
+    if (cachedCategories) {
+      return cachedCategories;
+    }
+    const categories = await this.categoriesService.findAll();
+    await this.cacheManager.set(key, categories);
+    return categories;
   }
 
   @Post()
